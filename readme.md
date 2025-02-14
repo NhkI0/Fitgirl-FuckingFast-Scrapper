@@ -40,7 +40,7 @@ some game you need to copy-paste everything inside ***links.txt***. To do so you
 ![Screen of the PasteBin to FuckingFast](https://nguengant.fr/file-hosting/fuckingFast_img.png)<br>
 Either click on the **Raw text** button and copy-paste everything inside ***links.txt***.
 
-Or click on the **Save Paste** one and rename the downloaded file ***links.txt*** then move it inside the project 
+Or click on the **Save paste** one and rename the downloaded file ***links.txt*** then move it inside the project 
 folder.
 ## Run
 Project CLI helper:
