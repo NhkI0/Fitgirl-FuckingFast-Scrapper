@@ -28,7 +28,8 @@ def start_download(start=0, end=None, links_list=None):
     # We don't read again the links if we've already done it before
     if links_list is None:
         links_list = get_links()
-
+    assert start <= len(links_list), \
+        f"The start index {start+1} is out of range\nMaximum possible index is {len(links_list)}"
     # We get the download path from the file
     file = open("./conf.txt", "r")
     save_path_base = file.read()
