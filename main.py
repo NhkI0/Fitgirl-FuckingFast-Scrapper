@@ -14,6 +14,11 @@ def set_path(path):
 
 
 def start_download(start=0, end=None, links_list=None):
+    """
+    Start download of the given links in the given directory.
+    :param start: The index of the first link to download. 0 by default.
+    :param end: The index of the last link to download. Will go to the end by default.
+    """
     # Basic assertion to ensure the good work of the download
     assert os.stat("./conf.txt").st_size > 0, "No destination folder set"
     start = int(start)
@@ -79,6 +84,12 @@ def get_links():
 
 
 def resume_download(skip_last, end):
+    """
+    Resume the download of the given links in the given directory.
+    :param skip_last: If True avoid re-downloading the last file.
+    If False re-download and overwrite it to ensure it has been well downloaded and not corrupted.
+    :param end: The index of the last link to download. Will go to the end by default.
+    """
     links_list = get_links()
     file = open("./conf.txt", "r")
     DIR = file.read()
@@ -94,16 +105,17 @@ def resume_download(skip_last, end):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FitGirl Fast Scraper CLI")
 
-    parser.add_argument("command", choices=["start_download", "resume_download", "set_path"],
-                        help="Choose an action")
+    parser.add_argument("command", choices=["start_download", "resume_download", "set_path"])
     parser.add_argument("-s", "--start", default=0,
-                        help="Used to start downloading at a specific index")
+                        help="The index of the first link to download. 0 by default.")
     parser.add_argument("-e", "--end", default=None,
-                        help="Used to stop downloading at a specific index")
+                        help="The index of the last link to download. Will go to the end by default.")
     parser.add_argument("-p", "--path", default="",
                         help="Set the path to save the files to")
     parser.add_argument("-sl", "--skip_last", action="store_true",
-                        help="Don't re-download and overwrite the last file")
+                        help="If True avoid re-downloading the last file. "
+                             "If False re-download and overwrite it to ensure it has been well"
+                             " downloaded and not corrupted.")
 
     args = parser.parse_args()
 
