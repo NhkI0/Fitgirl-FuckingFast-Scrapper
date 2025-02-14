@@ -77,13 +77,32 @@ def get_links():
     return links_list
 
 
+def resume_download(skip_last, end):
+    links_list = get_links()
+    file = open("./conf.txt", "r")
+    DIR = file.read()
+    file.close()
+    start = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
+    if skip_last:
+        start += 1
+    if end is None:
+        end = len(links_list)
+    start_download(start, end, links_list)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FitGirl Fast Scraper CLI")
 
-    parser.add_argument("command", choices=["start_download", "set_path"], help="Choose an action")
-    parser.add_argument("--start", default=0, help="Used to start downloading at a specific index")
-    parser.add_argument("--end", default=None, help="Used to stop downloading at a specific index")
-    parser.add_argument("--path", default="", help="Set the path to save the files to")
+    parser.add_argument("command", choices=["start_download", "resume_download", "set_path"],
+                        help="Choose an action")
+    parser.add_argument("-s", "--start", default=0,
+                        help="Used to start downloading at a specific index")
+    parser.add_argument("-e", "--end", default=None,
+                        help="Used to stop downloading at a specific index")
+    parser.add_argument("-p", "--path", default="",
+                        help="Set the path to save the files to")
+    parser.add_argument("-sl", "--skip_last", action="store_true",
+                        help="Don't re-download and overwrite the last file")
 
     args = parser.parse_args()
 
@@ -91,3 +110,5 @@ if __name__ == "__main__":
         start_download(args.start, args.end)
     elif args.command == "set_path":
         set_path(args.path)
+    elif args.command == "resume_download":
+        resume_download(args.skip_last, args.end)
