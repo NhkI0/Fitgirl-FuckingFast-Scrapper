@@ -1,4 +1,5 @@
-# Fitgirl Repacks Fucking Fast Scrapper
+# <img src="https://i1.sndcdn.com/artworks-d8IEGpJtVDjlQ76b-wfBUFA-t500x500.jpg" width="50"> Fitgirl Repacks Fucking Fast Scrapper 
+
 This CLI scrapper allows you to download free games from 
 <a href="https://fitgirl-repacks.site" target="_blank">FitGirl Repacks</a>
 using the FuckingFast file hosting service. This is intended to be a download manager if you want a more complete 
@@ -36,7 +37,7 @@ If the destination folder doesn't exist it will be created once the program star
 For the same reason as before the links need to be  inside a folder, this time regarding the high number of links in 
 some game you need to copy-paste everything inside ***links.txt***. To do so you have two easy ways:
 
-![Screen of the PasteBin to FuckingFast](https://postimg.cc/JyyrgGLW)<br>
+![Screen of the PasteBin to FuckingFast](https://nguengant.fr/file-hosting/fuckingFast_img.png)<br>
 Either click on the **Raw text** button and copy-paste everything inside ***links.txt***.
 
 Or click on the **Save Paste** one and rename the downloaded file ***links.txt*** then move it inside the project 
