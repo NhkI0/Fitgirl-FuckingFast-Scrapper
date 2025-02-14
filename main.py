@@ -13,7 +13,8 @@ def set_path(path):
     file.close()
 
 
-def start_download(start=0, end=None):
+def start_download(start=0, end=None, links_list=None):
+    # Basic assertion to ensure the good work of the download
     assert os.stat("./conf.txt").st_size > 0, "No destination folder set"
     start = int(start)
     if start > 0:
@@ -24,28 +25,15 @@ def start_download(start=0, end=None):
         assert end >= start, "The end value cannot lower to the start one"
     assert start >= 0, "The start value cannot be negative"
 
-    # Path to the links file
-    links_list = []
-    file = open("./links.txt", "r")
-    links = file.readlines()
-    file.close()
-    pattern = r"^- (https:\/\/fuckingfast\.co\/\S+)"
-    found = False
-    isEmpty = True
-    for line in links:
-        isEmpty = False
-        match = re.search(pattern, line)
-        if match:
-            found = True
-            links_list.append(match.group(1))
+    # We don't read again the links if we've already done it before
+    if links_list is None:
+        links_list = get_links()
 
-    if isEmpty:
-        print("The given file is empty")
-    elif not found:
-        print("No links were found inside the file")
+    # We get the download path from the file
     file = open("./conf.txt", "r")
     save_path_base = file.read()
     file.close()
+
     if end is None or end > len(links_list):
         end = len(links_list)
     for i in range(start, end):
@@ -65,6 +53,28 @@ def start_download(start=0, end=None):
         else:
             print("Couldn't find the name of the file")
     print("All files have been downloaded")
+
+
+def get_links():
+    # Path to the links file
+    links_list = []
+    file = open("./links.txt", "r")
+    links = file.readlines()
+    file.close()
+    pattern = r"^- (https:\/\/fuckingfast\.co\/\S+)"
+    found = False
+    isEmpty = True
+    for line in links:
+        isEmpty = False
+        match = re.search(pattern, line)
+        if match:
+            found = True
+            links_list.append(match.group(1))
+    if isEmpty:
+        print("The given file is empty")
+    elif not found:
+        print("No links were found inside the file")
+    return links_list
 
 
 if __name__ == "__main__":
