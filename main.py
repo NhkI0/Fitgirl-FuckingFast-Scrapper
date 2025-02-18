@@ -35,13 +35,18 @@ def set_links(start_url, hl):
         time.sleep(1)
         print(f"New page title: {driver.title}")
         print(f"Current URL: {driver.current_url}\n")
-
-        div = driver.find_element(By.ID, 'plaintext')
-        links = div.text.split('\n')
+        pattern = r"^https://fuckingfast\.co/"
         f = open("./links.txt", "w")
-        for link in links:
-            print(link)
-            f.write(link+"\n")
+        if bool(re.match(pattern, driver.current_url)):
+            print(driver.current_url)
+            f.write(driver.current_url + "\n")
+        else:
+            div = driver.find_element(By.ID, 'plaintext')
+            links = div.text.split('\n')
+            f = open("./links.txt", "w")
+            for link in links:
+                print(link)
+                f.write(link+"\n")
         f.close()
         print(f"Saved links to {f.name}")
     except Exception as e:
