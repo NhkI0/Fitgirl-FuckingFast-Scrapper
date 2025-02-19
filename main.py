@@ -20,21 +20,17 @@ def set_links(start_url, hl):
     target_link_text = "Filehoster: FuckingFast" # To locate the Filehoster link
     driver = chrome_connect(hl)
     try:
-        # Navigate to the starting webpage
         print(f"Navigating to {start_url}")
         driver.get(start_url)
-
         # Wait for the page to load
         time.sleep(1)
         link_element = driver.find_element(By.LINK_TEXT, target_link_text)
         print(f"Found link: {target_link_text}")
         link_url = link_element.get_attribute('href')
-        print(f"Clicked on link, now navigating to {link_url}")
         driver.get(link_url)
         # Wait for the page to load
         time.sleep(1)
-        print(f"New page title: {driver.title}")
-        print(f"Current URL: {driver.current_url}\n")
+        print(f"New page URL: {driver.current_url}\n")
         pattern = r"^https://fuckingfast\.co/"
         f = open("./links.txt", "w")
         if bool(re.match(pattern, driver.current_url)):
