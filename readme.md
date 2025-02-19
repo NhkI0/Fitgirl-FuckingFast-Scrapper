@@ -15,7 +15,8 @@ however this being said:
 |                                    Faster than most Torrents                                    |      Old games don't have FuckingFast hosting      |
 |                         Not blocked by school or work network policies                          |      Still need to install it the regular way      |
 |                               Allows you to download part by part                               | Need to do selective download manually *(For now)* |
-| No need to setup everything after the start of the download, even after restarting the computer | Must copy paste the links by hand <br>(For now)
+| No need to setup everything after the start of the download, even after restarting the computer | 
+
 ## Configuration
 ### 1. Open a terminal inside the cloned folder.<br>
 ### 2. Install the requirements.
@@ -34,6 +35,14 @@ Or set it yourself inside ***conf.txt***, please note that you need to have only
 properly.<br>
 If the destination folder doesn't exist it will be created once the program start.
 ### 4. Add the links
+There is a text file inside the project made to keep in mind the links. You can automatically save all the links 
+inside the saving file by running the following command:
+````shell
+python main.py get_links --url https://fitgirl-repacks.site/my-awesome-game/ -hl
+````
+Or by running the --url or -u arguments and specifying the target url while you'll run the start command.
+
+### 4.b (If you don't have Chrome on your computer) Add the links
 For the same reason as before the links need to be  inside a folder, this time regarding the high number of links in 
 some game you need to copy-paste everything inside ***links.txt***. To do so you have two easy ways:
 
@@ -48,7 +57,7 @@ Project CLI helper:
 FitGirl Fast Scraper CLI
 
 positional arguments:
-  {start_download,resume_download,set_path}
+  {start_download,resume_download,set_path,get_links}
 
 options:
   -h, --help            show this help message and exit
@@ -58,11 +67,18 @@ options:
   -p PATH, --path PATH  Set the path to save the files to
   -sl, --skip_last      If True avoid re-downloading the last file. If False re-download and overwrite it to ensure it
                         has been well downloaded and not corrupted.
+  -u URL, --url URL     Set the https://fitgirl-repacks.site link
+  -hl, --headless       Use the browser headless mode
 ````
 Once everything before is done you just have to use the following command:
 ````shell
 python main.py start_download
 ````
+Or if you skipped the part about settings the links:
+````shell
+python main.py start_download -u https://fitgirl-repacks.site/my-awesome-game/ -hl
+````
+You can remove the -hl if you want to show the chrome page (even if it is pretty useless).\
 The following exemple will start downloading the 2nd link and all the others until it reach the 11th:
 ````shell
 python main.py start_download -s 2 -e 11
