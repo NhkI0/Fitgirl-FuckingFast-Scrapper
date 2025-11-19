@@ -1,10 +1,56 @@
 import os
-
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+import time
 import argparse
 import re
 import download
+
+
+def chrome_connect(hl):
+    chrome_options = Options()
+    if hl:
+        chrome_options.add_argument('--headless=new')
+    driver = webdriver.Chrome(options=chrome_options)
+    return driver
+
+
+def set_links(start_url, hl):
+    target_link_text = "Filehoster: FuckingFast" # To locate the Filehoster link
+    driver = chrome_connect(hl)
+    try:
+        print(f"Navigating to {start_url}")
+        driver.get(start_url)
+        # Wait for the page to load
+        time.sleep(1)
+        link_element = driver.find_element(By.LINK_TEXT, target_link_text)
+        print(f"Found link: {target_link_text}")
+        link_url = link_element.get_attribute('href')
+        driver.get(link_url)
+        # Wait for the page to load
+        time.sleep(1)
+        print(f"New page URL: {driver.current_url}\n")
+        pattern = r"^https://fuckingfast\.co/"
+        f = open("./links.txt", "w")
+        if bool(re.match(pattern, driver.current_url)):
+            print(driver.current_url)
+            f.write(driver.current_url + "\n")
+        else:
+            div = driver.find_element(By.ID, 'plaintext')
+            links = div.text.split('\n')
+            f = open("./links.txt", "w")
+            for link in links:
+                print(link)
+                f.write(link+"\n")
+        f.close()
+        print(f"Saved links to {f.name}")
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        # Close the browser
+        driver.quit()
+        print("\nBrowser is now closed\n")
 
 
 def set_path(path):
@@ -13,9 +59,12 @@ def set_path(path):
     file.close()
 
 
-def start_download(start=0, end=None, links_list=None):
+def start_download(start=0, end=None, url=None, hl=None,links_list=None):
     """
     Start download of the given links in the given directory.
+    :param links_list:
+    :param hl:
+    :param url:
     :param start: The index of the first link to download. 0 by default.
     :param end: The index of the last link to download. Will go to the end by default.
     """
@@ -29,6 +78,9 @@ def start_download(start=0, end=None, links_list=None):
         assert end >= 0, "The end value cannot be negative"
         assert end >= start, "The end value cannot lower to the start one"
     assert start >= 0, "The start value cannot be negative"
+
+    if url is not None:
+        set_links(url, hl)
 
     # We don't read again the links if we've already done it before
     if links_list is None:
@@ -67,7 +119,7 @@ def get_links():
     file = open("./links.txt", "r")
     links = file.readlines()
     file.close()
-    pattern = r"^- (https:\/\/fuckingfast\.co\/\S+)"
+    pattern = r"(https:\/\/fuckingfast\.co\/\S+)"
     found = False
     isEmpty = True
     for line in links:
@@ -92,20 +144,20 @@ def resume_download(skip_last, end):
     """
     links_list = get_links()
     file = open("./conf.txt", "r")
-    DIR = file.read()
+    dirt = file.read()
     file.close()
-    start = len([name for name in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, name))])
+    start = len([name for name in os.listdir(dirt) if os.path.isfile(os.path.join(dirt, name))])
     if skip_last:
         start += 1
     if end is None:
         end = len(links_list)
-    start_download(start, end, links_list)
+    start_download(start, end, None, None, links_list)  # 2 None because of the other arguments
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FitGirl Fast Scraper CLI")
 
-    parser.add_argument("command", choices=["start_download", "resume_download", "set_path"])
+    parser.add_argument("command", choices=["start_download", "resume_download", "set_path", "get_links"])
     parser.add_argument("-s", "--start", default=0,
                         help="The index of the first link to download. 0 by default.")
     parser.add_argument("-e", "--end", default=None,
@@ -116,12 +168,16 @@ if __name__ == "__main__":
                         help="If True avoid re-downloading the last file. "
                              "If False re-download and overwrite it to ensure it has been well"
                              " downloaded and not corrupted.")
+    parser.add_argument("-u", "--url", help="Set the https://fitgirl-repacks.site link")
+    parser.add_argument("-hl", "--headless", action="store_true", help="Use the browser headless mode")
 
     args = parser.parse_args()
 
     if args.command == "start_download":
-        start_download(args.start, args.end)
+        start_download(args.start, args.end, args.url, args.headless)
     elif args.command == "set_path":
         set_path(args.path)
     elif args.command == "resume_download":
         resume_download(args.skip_last, args.end)
+    elif args.command == "get_links":
+        set_links(args.url, args.headless)
