@@ -18,41 +18,65 @@ def chrome_connect(hl):
 
 def set_links(start_url, hl):
     target_link_text = "Filehoster: FuckingFast"
-    # To locate the Filehoster link
     driver = chrome_connect(hl)
     try:
         print(f"Navigating to {start_url}")
         driver.get(start_url)
-        # Wait for the page to load
         time.sleep(1)
+
         link_element = driver.find_element(By.LINK_TEXT, target_link_text)
         print(f"Found link: {target_link_text}")
         link_url = link_element.get_attribute('href')
         driver.get(link_url)
-        # Wait for the page to load
         time.sleep(1)
+
         print(f"New page URL: {driver.current_url}\n")
-        pattern = r"^https://fuckingfast\.co/"
-        f = open("./links.txt", "w")
-        if bool(re.match(pattern, driver.current_url)):
-            print(driver.current_url)
-            f.write(driver.current_url + "\n")
-        else:
-            div = driver.find_element(By.ID, 'plaintext')
-            links = div.text.split('\n')
-            f = open("./links.txt", "w")
-            for i in range(len(links)):
-                link = links[i]
-                print(f"{i+1}: {links}")
-                f.write(f"{link}\n")
-        f.close()
-        print(f"Saved links to {f.name}")
+
+        # Pattern to validate links
+        link_pattern = r"^https://fuckingfast\.co/\S+"
+
+        with open("./links.txt", "w") as f:
+            # Check if current URL is a single fuckingfast link
+            if re.match(link_pattern, driver.current_url):
+                print(f"1: {driver.current_url}")
+                f.write(driver.current_url + "\n")
+            else:
+                # Multiple links in plaintext div
+                div = driver.find_element(By.ID, 'plaintext')
+                links = div.text.split('\n')
+
+                for link in links:
+                    link = link.strip()  # Remove whitespace
+                    # Only write if it matches the pattern
+                    if re.match(link_pattern, link):
+                        f.write(link + "\n")
+
     except Exception as e:
         print(f"Error: {e}")
     finally:
-        # Close the browser
         driver.quit()
         print("\nBrowser is now closed\n")
+        show_links()
+
+
+def show_links():
+    try:
+        f = open("./links.txt", "r")
+        links = f.readlines()
+
+        if not links:
+            print("=== NO LINKS FOUND IN FILE ===")
+            return
+
+        print(f"=== FOUND {len(links)} LINKS ===\n")
+        for i, link in enumerate(links, start=1):
+            print(f"{i}: {link}", end="")
+        print(f"\n=== END OF LINKS ===\n")
+
+    except FileNotFoundError:
+        print("Error: links.txt file not found")
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 def set_path(path):
@@ -160,7 +184,12 @@ def resume_download(skip_last, end):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FitGirl Fast Scraper CLI")
 
-    parser.add_argument("command", choices=["start_download", "resume_download", "set_path", "get_links"])
+    parser.add_argument("command", choices=["start_download",
+                                            "resume_download",
+                                            "set_path",
+                                            "get_links",
+                                            "show_links",
+                                            ])
     parser.add_argument("-s", "--start", default=0,
                         help="The index of the first link to download. 0 by default.")
     parser.add_argument("-e", "--end", default=None,
@@ -184,3 +213,5 @@ if __name__ == "__main__":
         resume_download(args.skip_last, args.end)
     elif args.command == "get_links":
         set_links(args.url, args.headless)
+    elif args.command == "show_links":
+        show_links()
