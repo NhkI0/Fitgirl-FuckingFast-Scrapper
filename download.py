@@ -5,17 +5,18 @@ from pathlib import Path
 import os
 
 
-def extract_download_link(script_content):
+def extract_download_link(script_content: str) -> str | None:
     # Pattern to match window.open with a direct URL
-    scriptPattern = r'window\.open\("(https://[^"]+)"'
-    scriptMatch = re.search(scriptPattern, script_content)
+    script_pattern = r'window\.open\("(https://[^"]+)"'
+    script_match = re.search(script_pattern, script_content)
 
-    if scriptMatch:
-        return scriptMatch.group(1)
+    if script_match:
+        return script_match.group(1)
     return None
 
-def get_download_link_from_page(url):
-    response = requests.get(url)
+
+def get_download_link_from_page(page_url: str) -> str | None:
+    response = requests.get(page_url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
     for script in soup.find_all('script'):
@@ -25,18 +26,19 @@ def get_download_link_from_page(url):
                 return link
     return None
 
-def download_with_requests(url, save_path):
+
+def download_with_requests(page_url: str, download_path: str) -> bool:
     """
-    Download a file using the requests library with progress tracking
+    Download a file using the request library with progress tracking
     and error handling.
 
     Args:
-        url (str): URL of the file to download
-        save_path (str): Local path where the file should be saved
+        page_url (str): URL of the file to download
+        download_path (str): Local path where the file should be saved
     """
     try:
         # Send a GET request with stream=True to handle large files
-        response = requests.get(url, stream=True)
+        response = requests.get(page_url, stream=True)
         response.raise_for_status()  # Raise an exception for bad status codes
 
         # Get the total file size if available
@@ -46,7 +48,7 @@ def download_with_requests(url, save_path):
         Path(os.path.dirname(save_path)).mkdir(parents=True, exist_ok=True)
 
         # Open the local file to write the downloaded content
-        with open(save_path, 'wb') as file:
+        with open(download_path, 'wb') as file:
             if total_size == 0:
                 file.write(response.content)
             else:
