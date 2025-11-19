@@ -68,7 +68,7 @@ def show_links():
             print("=== NO LINKS FOUND IN FILE ===")
             return
 
-        print(f"=== FOUND {len(links)} LINKS ===\n")
+        print(f"=== FOUND {len(links)} LINK{"S" if len(links) >= 2 else ""} ===\n")
         for i, link in enumerate(links, start=1):
             print(f"{i}: {link}", end="")
         print(f"\n=== END OF LINKS ===\n")
