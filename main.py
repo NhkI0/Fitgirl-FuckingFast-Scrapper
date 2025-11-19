@@ -29,7 +29,7 @@ def chrome_connect(hl: bool) -> WebDriver:
 
 def set_links(start_url: str, hl: bool) -> None:
     """
-    Navigate to FitGirl repacks page and extract FuckingFast download links.
+    Navigate to FitGirl REPACK page and extract FuckingFast download links.
 
     Args:
         start_url: The FitGirl repacks URL to scrape
