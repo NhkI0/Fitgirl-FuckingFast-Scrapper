@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
 import os
+from tqdm import tqdm
 
 
 def extract_download_link(script_content: str) -> str | None:
@@ -37,38 +38,31 @@ def download_with_requests(page_url: str, download_path: str) -> bool:
         download_path (str): Local path where the file should be saved
     """
     try:
-        # Send a GET request with stream=True to handle large files
         response = requests.get(page_url, stream=True)
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status()
 
-        # Get the total file size if available
         total_size = int(response.headers.get('content-length', 0))
 
-        # Create directory if it doesn't exist
-        Path(os.path.dirname(save_path)).mkdir(parents=True, exist_ok=True)
+        Path(os.path.dirname(download_path)).mkdir(parents=True, exist_ok=True)
 
-        # Open the local file to write the downloaded content
+        # Use tqdm for progress bar
         with open(download_path, 'wb') as file:
-            if total_size == 0:
-                file.write(response.content)
-            else:
-                downloaded = 0
+            with tqdm(total=total_size, unit='B', unit_scale=True,
+                      unit_divisor=1024, desc="Downloading") as pbar:
                 for chunk in response.iter_content(chunk_size=8192):
                     if chunk:
                         file.write(chunk)
-                        downloaded += len(chunk)
-                        # Calculate download progress
-                        progress = (downloaded / total_size) * 100
-                        print(f"\rDownload Progress: {progress:.1f}%", end="")
-        print("\nDownload completed!")
+                        pbar.update(len(chunk))
+
+        print("✓ Download completed!")
+        return True
 
     except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
+        print(f"✗ An error occurred: {e}")
         return False
     except IOError as e:
-        print(f"Error saving file: {e}")
+        print(f"✗ Error saving file: {e}")
         return False
-    return True
 
 
 # Example usage
