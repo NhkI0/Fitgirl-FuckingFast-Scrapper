@@ -17,7 +17,8 @@ def chrome_connect(hl):
 
 
 def set_links(start_url, hl):
-    target_link_text = "Filehoster: FuckingFast" # To locate the Filehoster link
+    target_link_text = "Filehoster: FuckingFast"
+    # To locate the Filehoster link
     driver = chrome_connect(hl)
     try:
         print(f"Navigating to {start_url}")
@@ -40,9 +41,10 @@ def set_links(start_url, hl):
             div = driver.find_element(By.ID, 'plaintext')
             links = div.text.split('\n')
             f = open("./links.txt", "w")
-            for link in links:
-                print(link)
-                f.write(link+"\n")
+            for i in range(len(links)):
+                link = links[i]
+                print(f"{i+1}: {links}")
+                f.write(f"{link}\n")
         f.close()
         print(f"Saved links to {f.name}")
     except Exception as e:
@@ -59,13 +61,14 @@ def set_path(path):
     file.close()
 
 
-def start_download(start=0, end=None, url=None, hl=None,links_list=None):
+def start_download(start=0, end=None, url=None, hl=None, links_list=None):
     """
     Start download of the given links in the given directory.
     :param links_list:
     :param hl:
     :param url:
-    :param start: The index of the first link to download. 0 by default.
+    :param start: The index of the first link to download.
+     Zero by default.
     :param end: The index of the last link to download. Will go to the end by default.
     """
     # Basic assertion to ensure the good work of the download
@@ -121,14 +124,14 @@ def get_links():
     file.close()
     pattern = r"(https:\/\/fuckingfast\.co\/\S+)"
     found = False
-    isEmpty = True
+    is_empty = True
     for line in links:
-        isEmpty = False
+        is_empty = False
         match = re.search(pattern, line)
         if match:
             found = True
             links_list.append(match.group(1))
-    if isEmpty:
+    if is_empty:
         print("The given file is empty")
     elif not found:
         print("No links were found inside the file")
