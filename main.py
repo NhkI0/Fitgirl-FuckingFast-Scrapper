@@ -110,8 +110,7 @@ def set_path(path: str) -> None:
     Args:
         path: The directory path where files should be saved
     """
-    with open("./conf.txt", 'w') as file:
-        file.write(path)
+    open("./conf.txt", 'w').write(path)
 
 
 def start_download(
@@ -147,15 +146,12 @@ def start_download(
     if url is not None:
         set_links(url, hl if hl is not None else False)
 
-    # We don't read again the links if we've already done it before
     if links_list is None:
         links_list = get_links()
     assert start <= len(links_list), \
         f"The start index {start + 1} is out of range\nMaximum possible index is {len(links_list)}"
 
-    # We get the download path from the file
-    with open("./conf.txt", "r") as file:
-        save_path_base: str = file.read()
+    save_path_base: str = open("./conf.txt", "r").read()
 
     if end is None or end > len(links_list):
         end = len(links_list)
@@ -227,8 +223,8 @@ def get_links() -> List[str]:
         List of valid FuckingFast URLs
     """
     links_list: List[str] = []
-    with open("./links.txt", "r") as file:
-        links: List[str] = file.readlines()
+
+    links: List[str] = open("./links.txt", "r").readlines()
 
     pattern: str = r"(https:\/\/fuckingfast\.co\/\S+)"
     found: bool = False
@@ -261,8 +257,7 @@ def resume_download(skip_last: bool, end: Optional[int], unzip: Optional[bool] =
     """
     links_list: List[str] = get_links()
 
-    with open("./conf.txt", "r") as file:
-        directory: str = file.read()
+    directory: str = open("./conf.txt", "r").read()
 
     start: int = len([name for name in os.listdir(directory)
                       if os.path.isfile(os.path.join(directory, name))])
@@ -331,3 +326,6 @@ if __name__ == "__main__":
         set_links(args.url, args.headless)
     elif args.command == "show_links":
         show_links()
+    elif args.command == "extract":
+        with open("./conf.txt", "r") as file:
+            extract(file.read())

@@ -5,7 +5,7 @@ from datetime import datetime
 from tqdm import tqdm
 
 
-def find_7zip():
+def find_7zip() -> str:
     """Find 7-Zip installation"""
     possible_paths = [
         r"C:\Program Files\7-Zip\7z.exe",
@@ -19,7 +19,7 @@ def find_7zip():
     raise FileNotFoundError("7-Zip not found! Install from https://www.7-zip.org/")
 
 
-def get_volumes_count(seven_zip, rar_file):
+def get_volumes_count(seven_zip: str, rar_file: str) -> int:
     """Get number of volumes to extract"""
     result = subprocess.run([
         seven_zip, 'l', '-slt', rar_file
@@ -32,7 +32,7 @@ def get_volumes_count(seven_zip, rar_file):
     return 1  # Single archive if not found
 
 
-def format_size(nb_bytes):
+def format_size(nb_bytes: int) -> str:
     """Format bytes to human-readable format"""
     for unit in ['B', 'KB', 'MB', 'GB']:
         if nb_bytes < 1024.0:
@@ -41,7 +41,7 @@ def format_size(nb_bytes):
     return f"{nb_bytes:.1f}TB"
 
 
-def get_archive_info(seven_zip, rar_file):
+def get_archive_info(seven_zip: str, rar_file: str) -> tuple[int, int]:
     """Get information about the archive"""
     result = subprocess.run([
         seven_zip, 'l', '-slt', rar_file
@@ -164,11 +164,23 @@ def extract_rar_with_tqdm(rar_file, output_dir):
         return process.returncode
 
 
-def extract(folder):
-    try:
-        first_rar = glob.glob(f"{folder}/*.part01.rar")[0]
-    except IndexError:
-        first_rar = glob.glob(f"{folder}/*.part1.rar")[0]
+def extract(folder: str) -> None:
+    list_rar: glob = glob.glob(f"{folder}/*.part01.rar")
 
-    extract_path = f"{folder}/Extracted"
-    extract_rar_with_tqdm(first_rar, extract_path)
+    if not list_rar:
+        list_rar: glob = glob.glob(f"{folder}/*.part1.rar")
+
+    if not list_rar:
+        list_rar: glob = glob.glob(f"{folder}/*.part001.rar")
+
+    if not list_rar:
+        print("✗ No multi-part RAR archives found!")
+        print(f"✗ Searched in: {folder}")
+        return
+
+    print(f"📦 Found {len(list_rar)} archive(s) to extract\n")
+
+    for idx, rar in enumerate(list_rar, 1):
+        print(f"\n{'═' * 80}")
+        print(f"Archive {idx}/{len(list_rar)}")
+        extract_rar_with_tqdm(rar, folder)
