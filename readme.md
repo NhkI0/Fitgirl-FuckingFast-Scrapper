@@ -10,12 +10,13 @@ network policies while not installing everything file by file :)
 **⚠️Pirating games is bad you shouldn't do it, support the original creators of the games if you can⚠️**,
 however, this being said:
 
-|                                             Pros ✅                                              |                       Cons ❌                       |
-|:-----------------------------------------------------------------------------------------------:|:--------------------------------------------------:|
-|                                    Faster than most Torrents                                    |      Old games don't have FuckingFast hosting      |
-|                         Not blocked by school or work network policies                          |      Still need to install it the regular way      |
-|                               Allows you to download part by part                               | Need to do selective download manually *(For now)* |
-| No need to setup everything after the start of the download, even after restarting the computer | 
+|                                               Pros ✅                                               |                       Cons ❌                       |
+|:--------------------------------------------------------------------------------------------------:|:--------------------------------------------------:|
+|                                     Faster than most Torrents                                      |      Old games don't have FuckingFast hosting      |
+|                           Not blocked by school or work network policies                           |      Still need to install it the regular way      |
+|                                Allows you to download part by part                                 | Need to do selective download manually *(For now)* |
+| No need to re-setup everything after the start of the download, even after restarting the computer | 
+|                              Auto extraction of the downloaded files                               |
 
 ## Configuration
 ### 1. Open a terminal inside the cloned folder.<br>
@@ -55,10 +56,10 @@ folder.
 ## Run
 Project CLI helper:
 ````shell
-FitGirl Fast Scraper CLI
+FitFitGirl Fast Scraper CLI
 
 positional arguments:
-  {start_download,resume_download,set_path,get_links,show_links}
+  {start_download,resume_download,set_path,get_links,show_links,extract}
 
 options:
   -h, --help            show this help message and exit
@@ -69,6 +70,8 @@ options:
                         has been well downloaded and not corrupted.
   -u, --url URL         Set the https://fitgirl-repacks.site link
   -hl, --headless       Use the browser headless mode
+  -uz, --unzip, -ur, --unrar
+                        Extract the downloaded files, false by default, need to be specified.
 ````
 Once everything before is done you have to use the following command:
 ````shell
@@ -107,3 +110,20 @@ check indexes of the dlc or language pack you don't want
 using `python main.py show_links` and set the previous one as the --end argument.
 If you want to only download
 a DLC you can use its first and last index in the *--start* and *--end* arguments.
+
+## Extraction
+It is possible to extract the downloaded files directly in the CLI. For this you'll need [7zip](https://www.7-zip.org/)
+installed on your computer.
+You then have two options :
+1. Using the *-uz* argument:
+   
+    ``python main.py start_download -uz`` will automatically extract the game (and all DLC/optional parts) once finished 
+    downloading.
+
+    You can also use -ur, --unzip or --unrar (do what fits you most).
+<br><br>
+2. Run the extract command:
+    
+    If you forgot to specify the *-uz* while starting your download don't worry! 
+    
+    You can run ``python main.py extract`` to extract everything.
